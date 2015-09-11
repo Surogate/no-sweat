@@ -1,0 +1,11 @@
+<xml>
+<compiler name="VS14">
+<compiler_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\cl.exe</executable>
+<linker_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe</linker_executable>
+<include_directory>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include</include_directory>
+<library_directory>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\lib</library_directory>
+<translate_dictionnary>
+
+</translate_dictionnary>
+</compiler>
+</xml>
