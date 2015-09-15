@@ -7,6 +7,13 @@
 #include <winapifamily.h>
 
 #include "trim.hpp"
+#include "pugixml.hpp"
+#include "boost\program_options\variables_map.hpp"
+#include "boost\program_options\options_description.hpp"
+#include "boost\program_options\positional_options.hpp"
+#include "boost\program_options\options_description.hpp"
+#include "boost\program_options\cmdline.hpp"
+#include "boost\program_options\parsers.hpp"
 
 namespace windows
 {
@@ -21,29 +28,34 @@ using namespace std::experimental;
 struct project_config
 {
    std::vector<std::filesystem::path> input_files
-       = {R".("D:\Home\ancel\GitHub\no-sweat\Meta-compiler\main.cpp")."};
+       = {R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\main.cpp)."};
 
    std::vector<std::filesystem::path> object_files;
 
    std::vector<std::filesystem::path> header_directory
-       = {R".("D:\Home\ancel\GitHub\no-sweat\Meta-compiler")."};
+       = {R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler).",
+           R".(D:\Home\ancel\GitHub\pugixml\src).",
+           R".(D:\Home\ancel\GitHub\boost)."};
 
-   std::vector<std::filesystem::path> libraries_directories;
+   std::vector<std::filesystem::path> libraries_directories = {
+       R".(D:\Home\ancel\GitHub\boost\stage\lib).",
+       R".(D:\Home\ancel\GitHub\pugixml\scripts\Debug)."};
 
    std::vector<std::filesystem::path> libraries_names;
 
    std::filesystem::path output_directory
-       = R".("D:\Home\ancel\GitHub\no-sweat\Meta-compiler\").";
+       = R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\).";
 
    std::filesystem::path executable_name
-       = R".("D:\Home\ancel\GitHub\no-sweat\Meta-compiler\meta_comp.exe").";
+       = R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\meta_comp.exe).";
 };
 
 struct compiler_config
 {
-   std::filesystem::path compiler =
+   std::string name = "VS14";
+   std::filesystem::path compiler_executable =
        R".("C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\cl.exe").";
-   std::filesystem::path linker
+   std::filesystem::path linker_executable
        = R".("C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe").";
 
    std::vector<std::filesystem::path> object_files;
@@ -147,7 +159,8 @@ void add_to_command(
    }
 }
 
-void add_to_command(std::string& command, const std::string& command_name, const std::filesystem::path& to_be_added)
+void add_to_command(std::string& command, const std::string& command_name,
+    const std::filesystem::path& to_be_added)
 {
    command += " " + command_name;
    command += add_quote(to_be_added.string());
@@ -170,18 +183,18 @@ bool try_compile(const compiler_config& comp_conf,
    dir += source_file.filename().stem().generic_string() + ".obj";
    output = add_quote(dir);
 
-   std::string command = comp_conf.compiler.string();
+   std::string command = comp_conf.compiler_executable.string();
 
    add_to_command(command, comp_conf.commands.find("JUST_COMPILE")->second);
    add_to_command(command, comp_conf.commands.find("EXCEPTION_ENABLE")->second);
-   
+
    add_to_command(command, comp_conf.commands.find("INCLUDE_DIRECTORY")->second,
        proj_config.header_directory);
    add_to_command(command, comp_conf.commands.find("INCLUDE_DIRECTORY")->second,
        comp_conf.header_directory);
 
-   add_to_command(
-       command, comp_conf.commands.find("OUTPUT_OBJECT_FILE")->second, output.string());
+   add_to_command(command,
+       comp_conf.commands.find("OUTPUT_OBJECT_FILE")->second, output.string());
    add_to_command(command, source_file.string());
 
    std::cout << "compile " << source_file << " to " << output << std::endl;
@@ -212,8 +225,8 @@ bool try_compile(const compiler_config& comp_conf, project_config& proj_config)
 
 bool try_link(const compiler_config& comp_conf, project_config& proj_config)
 {
-   std::string command = add_quote(comp_conf.linker.string());
-   
+   std::string command = add_quote(comp_conf.linker_executable.string());
+
    add_to_command(command, comp_conf.commands.find("LIBRARY_DIRECTORY")->second,
        proj_config.libraries_directories);
    add_to_command(command, comp_conf.commands.find("LIBRARY_DIRECTORY")->second,
@@ -224,7 +237,7 @@ bool try_link(const compiler_config& comp_conf, project_config& proj_config)
 
    add_to_command(command, proj_config.libraries_names);
    add_to_command(command, comp_conf.libraries_names);
-   
+
    add_to_command(command, comp_conf.commands.find("OUTPUT_EXECUTABLE")->second,
        proj_config.executable_name);
 
@@ -235,11 +248,62 @@ bool try_link(const compiler_config& comp_conf, project_config& proj_config)
    return windows::execute_command(command) && std::filesystem::exists(output);
 }
 
+compiler_config parse_compiler_config(
+    const std::filesystem::path& comp_file_path)
+{
+   return compiler_config();
+}
+
 int main(int argc, char** argv)
 {
-   std::filesystem::path output;
+   boost::program_options::options_description desc("Allowed options");
+   desc.add_options()("help", "produce help message")("compiler",
+       boost::program_options::value<std::filesystem::path>(),
+       "compiler configuration file in xml");
+
+   boost::program_options::variables_map vm;
+   try
+   {
+      boost::program_options::store(
+          boost::program_options::command_line_parser(argc, argv)
+              .options(desc)
+              .style(boost::program_options::command_line_style::unix_style
+                  | boost::program_options::command_line_style::
+                        allow_long_disguise)
+              .allow_unregistered()
+              .run(),
+          vm);
+   }
+   catch(boost::program_options::error e)
+   {
+      std::cout << desc << std::endl;
+      return 0;
+   }
+
+   if(vm.count("help") || !vm.size() || !vm.count("compiler"))
+   {
+      std::cout << desc << std::endl;
+      return 0;
+   }
+
    compiler_config comp_conf;
    project_config proj_conf;
+
+   auto it_comp = vm.find("compiler");
+   if(it_comp != vm.end())
+   {
+      std::filesystem::path compiler_path
+          = remove_quote(it_comp->second.as<std::filesystem::path>().string());
+      if(std::filesystem::exists(compiler_path))
+         comp_conf = parse_compiler_config(compiler_path);
+      else
+      {
+         std::cout << "error" << std::endl;
+         std::cout << compiler_path << " not found !" << std::endl;
+         return 1;
+      }
+   }
+
    bool result = try_compile(comp_conf, proj_conf);
    if(result)
    {
