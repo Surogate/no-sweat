@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <experimental\filesystem>
 #include <winapifamily.h>
 
@@ -63,12 +64,11 @@ struct compiler_config
            "comdlg32.lib", "advapi32.lib", "shell32.lib", "ole32.lib",
            "oleaut32.lib", "uuid.lib", "odbc32.lib", "odbccp32.lib"};
 
-   std::string output_object_file_command = R".(/Fo:).";
-   std::string include_directory_command = R".(/I).";
-   std::string exception_enable_command = R".(/EHsc).";
-   std::string just_compile_command = R".(/c).";
-   std::string output_executable_command = R".(/OUT:).";
-   std::string library_directory_command = R".(/LIBPATH:).";
+   std::map<std::string, std::string> commands
+       = {{"OUTPUT_OBJECT_FILE", R".(/Fo:)."}, {"INCLUDE_DIRECTORY", R".(/I)."},
+           {"EXCEPTION_ENABLE", R".(/EHsc)."}, {"JUST_COMPILE", R".(/c)."},
+           {"OUTPUT_EXECUTABLE", R".(/OUT:)."},
+           {"LIBRARY_DIRECTORY", R".(/LIBPATH:)."}};
 };
 
 #ifdef _WIN32
@@ -143,38 +143,22 @@ void add_to_command(
 {
    for(auto& value : values)
    {
-      add_to_command(command, value.string());
+      add_to_command(command, add_quote(value.string()));
    }
 }
 
-void add_to_command(std::string& command, const std::string& command_name,
-    bool space, const std::filesystem::path& to_be_added)
+void add_to_command(std::string& command, const std::string& command_name, const std::filesystem::path& to_be_added)
 {
    command += " " + command_name;
-   if(space)
-      command += " ";
-   command += to_be_added.string();
-}
-
-void add_to_command(std::string& command, const std::string& command_name,
-    const std::filesystem::path& to_be_added)
-{
-   //bool space = trim(command_name).back() == ':';
-   bool space = false;
-   command += " " + command_name;
-   if(space)
-      command += " ";
-   command += to_be_added.string();
+   command += add_quote(to_be_added.string());
 }
 
 void add_to_command(std::string& command, const std::string& command_name,
     const std::vector<std::filesystem::path>& to_be_added)
 {
-   //bool space = trim(command_name).back() == ':';
-   bool space = false;
    for(auto& adding_path : to_be_added)
    {
-      add_to_command(command, command_name, space, adding_path);
+      add_to_command(command, command_name, adding_path);
    }
 }
 
@@ -188,23 +172,24 @@ bool try_compile(const compiler_config& comp_conf,
 
    std::string command = comp_conf.compiler.string();
 
-   add_to_command(command, comp_conf.just_compile_command);
-   add_to_command(command, comp_conf.exception_enable_command);
-
-   add_to_command(command, comp_conf.include_directory_command,
+   add_to_command(command, comp_conf.commands.find("JUST_COMPILE")->second);
+   add_to_command(command, comp_conf.commands.find("EXCEPTION_ENABLE")->second);
+   
+   add_to_command(command, comp_conf.commands.find("INCLUDE_DIRECTORY")->second,
        proj_config.header_directory);
-   add_to_command(command, comp_conf.include_directory_command,
+   add_to_command(command, comp_conf.commands.find("INCLUDE_DIRECTORY")->second,
        comp_conf.header_directory);
 
    add_to_command(
-       command, comp_conf.output_object_file_command, output.string());
+       command, comp_conf.commands.find("OUTPUT_OBJECT_FILE")->second, output.string());
    add_to_command(command, source_file.string());
 
    std::cout << "compile " << source_file << " to " << output << std::endl;
    output = remove_quote(output.string());
    std::filesystem::remove(output);
    output = add_quote(output.string());
-   return windows::execute_command(command) && std::filesystem::exists(remove_quote(output.string()));
+   return windows::execute_command(command)
+       && std::filesystem::exists(remove_quote(output.string()));
 }
 
 bool try_compile(const compiler_config& comp_conf, project_config& proj_config)
@@ -227,11 +212,11 @@ bool try_compile(const compiler_config& comp_conf, project_config& proj_config)
 
 bool try_link(const compiler_config& comp_conf, project_config& proj_config)
 {
-   std::string command = comp_conf.linker.string();
-
-   add_to_command(command, comp_conf.library_directory_command,
+   std::string command = add_quote(comp_conf.linker.string());
+   
+   add_to_command(command, comp_conf.commands.find("LIBRARY_DIRECTORY")->second,
        proj_config.libraries_directories);
-   add_to_command(command, comp_conf.library_directory_command,
+   add_to_command(command, comp_conf.commands.find("LIBRARY_DIRECTORY")->second,
        comp_conf.libraries_directories);
 
    add_to_command(command, proj_config.object_files);
@@ -239,12 +224,13 @@ bool try_link(const compiler_config& comp_conf, project_config& proj_config)
 
    add_to_command(command, proj_config.libraries_names);
    add_to_command(command, comp_conf.libraries_names);
-
-   add_to_command(command, comp_conf.output_executable_command,
+   
+   add_to_command(command, comp_conf.commands.find("OUTPUT_EXECUTABLE")->second,
        proj_config.executable_name);
 
    std::cout << "link " << proj_config.executable_name << std::endl;
-   std::filesystem::path output = remove_quote(proj_config.executable_name.string());
+   std::filesystem::path output
+       = remove_quote(proj_config.executable_name.string());
    std::filesystem::remove(output);
    return windows::execute_command(command) && std::filesystem::exists(output);
 }
@@ -255,18 +241,21 @@ int main(int argc, char** argv)
    compiler_config comp_conf;
    project_config proj_conf;
    bool result = try_compile(comp_conf, proj_conf);
-   if (result)
+   if(result)
    {
-      std::cout << "compile " << proj_conf.executable_name << " ok !" << std::endl;
+      std::cout << "compile " << proj_conf.executable_name << " ok !"
+                << std::endl;
       result = try_link(comp_conf, proj_conf);
-      if (result)
+      if(result)
       {
-         std::cout << "linking " << proj_conf.executable_name << " ok !" << std::endl;
+         std::cout << "linking " << proj_conf.executable_name << " ok !"
+                   << std::endl;
       }
    }
-   if (!result)
+   if(!result)
    {
-      std::cout << "compiling " << proj_conf.executable_name << " fail !" << std::endl;
+      std::cout << "compiling " << proj_conf.executable_name << " fail !"
+                << std::endl;
    }
    return 0;
 }

@@ -27,11 +27,12 @@ template <typename T> static inline auto rtrim(T&& s) -> decltype(s)
 // trim from both ends
 template <typename T> static inline auto trim(T&& s) -> decltype(s)
 {
-   return std::move(ltrim(std::forward(rtrim(std::forward(s)))));
+   return std::move(ltrim(rtrim(s)));
 }
 
 template <typename T> static inline auto remove_quote(T&& s) -> decltype(s)
 {
+   s = trim(s);
    if(s.size())
    {
       if(s.back() == '"')
@@ -54,6 +55,7 @@ template <typename T> static inline auto remove_quote(T&& s) -> decltype(s)
 
 template <typename T> static inline auto add_quote(T&& s) -> decltype(s)
 {
+   s = trim(s);
    if(s.size())
    {
       if(s.back() != '"')
