@@ -122,10 +122,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="command_seeker.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="windows_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command_seeker.h" />
+    <ClInclude Include="configuration_structure.hpp" />
     <ClInclude Include="trim.hpp" />
+    <ClInclude Include="windows_implementation.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
