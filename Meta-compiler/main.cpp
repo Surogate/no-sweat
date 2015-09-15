@@ -41,7 +41,8 @@ struct project_config
        R".(D:\Home\ancel\GitHub\boost\stage\lib).",
        R".(D:\Home\ancel\GitHub\pugixml\scripts\Debug)."};
 
-   std::vector<std::filesystem::path> libraries_names;
+   std::vector<std::filesystem::path> libraries_names
+       = {"libboost_program_options-vc140-mt-1_59.lib"};
 
    std::filesystem::path output_directory
        = R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\).";
@@ -72,15 +73,18 @@ struct compiler_config
        R".("C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86").",
        R".("C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10150.0\ucrt\x86")."};
    std::vector<std::filesystem::path> libraries_names
-       = {"kernel32.lib", "user32.lib", "gdi32.lib", "winspool.lib",
+       /*= {"kernel32.lib", "user32.lib", "gdi32.lib", "winspool.lib",
            "comdlg32.lib", "advapi32.lib", "shell32.lib", "ole32.lib",
-           "oleaut32.lib", "uuid.lib", "odbc32.lib", "odbccp32.lib"};
+           "oleaut32.lib", "uuid.lib", "odbc32.lib", "odbccp32.lib"}*/;
 
-   std::map<std::string, std::string> commands
-       = {{"OUTPUT_OBJECT_FILE", R".(/Fo:)."}, {"INCLUDE_DIRECTORY", R".(/I)."},
-           {"EXCEPTION_ENABLE", R".(/EHsc)."}, {"JUST_COMPILE", R".(/c)."},
-           {"OUTPUT_EXECUTABLE", R".(/OUT:)."},
-           {"LIBRARY_DIRECTORY", R".(/LIBPATH:)."}};
+   std::map<std::string, std::string> commands = {
+       {"OUTPUT_OBJECT_FILE", R".(/Fo:)."}, {"INCLUDE_DIRECTORY", R".(/I)."},
+       {"EXCEPTION_ENABLE", R".(/EHsc)."}, {"JUST_COMPILE", R".(/c)."},
+       {"OUTPUT_EXECUTABLE", R".(/OUT:)."},
+       {"LIBRARY_DIRECTORY", R".(/LIBPATH:)."},
+       {"DATA_EXECUTION_PREVENTION", R".(/NXCOMPAT)."},
+       {"RANDOMIZED_BASE_ADDRESS", R".(/DYNAMICBASE)."},
+       {"DYNAMIC_COMPILATION", R".(/MD)."}, {"STATIC_COMPILATION", R".(/MT)."}};
 };
 
 #ifdef _WIN32
@@ -187,6 +191,7 @@ bool try_compile(const compiler_config& comp_conf,
 
    add_to_command(command, comp_conf.commands.find("JUST_COMPILE")->second);
    add_to_command(command, comp_conf.commands.find("EXCEPTION_ENABLE")->second);
+   add_to_command(command, comp_conf.commands.find("DYNAMIC_COMPILATION")->second);
 
    add_to_command(command, comp_conf.commands.find("INCLUDE_DIRECTORY")->second,
        proj_config.header_directory);
@@ -226,6 +231,11 @@ bool try_compile(const compiler_config& comp_conf, project_config& proj_config)
 bool try_link(const compiler_config& comp_conf, project_config& proj_config)
 {
    std::string command = add_quote(comp_conf.linker_executable.string());
+
+   add_to_command(
+       command, comp_conf.commands.find("DATA_EXECUTION_PREVENTION")->second);
+   add_to_command(
+       command, comp_conf.commands.find("RANDOMIZED_BASE_ADDRESS")->second);
 
    add_to_command(command, comp_conf.commands.find("LIBRARY_DIRECTORY")->second,
        proj_config.libraries_directories);
