@@ -10,6 +10,7 @@
 #include "command_seeker.h"
 #include "windows_implementation.hpp"
 #include "input.hpp"
+#include "error_status.hpp"
 
 namespace std
 {
@@ -34,19 +35,19 @@ bool try_compile(std::string command, const compiler_config& comp_conf,
        && std::filesystem::exists(remove_quote(output.string()));
 }
 
-std::string prepare_command(const compiler_config& comp_conf,
-   const project_config& proj_config)
+std::string prepare_command(
+    const compiler_config& comp_conf, const project_config& proj_config)
 {
    std::string command = comp_conf.compiler_executable.string();
 
    add_to_command(
-      command, { comp_conf, std::vector<std::string>{"JUST_COMPILE",
-      "EXCEPTION_ENABLE", "DYNAMIC_COMPILATION"} });
+       command, {comp_conf, std::vector<std::string>{"JUST_COMPILE",
+                                "EXCEPTION_ENABLE", "DYNAMIC_COMPILATION"}});
 
+   add_to_command(command, {comp_conf, "INCLUDE_DIRECTORY"},
+       proj_config.header_directories);
    add_to_command(
-      command, { comp_conf, "INCLUDE_DIRECTORY" }, proj_config.header_directory);
-   add_to_command(
-      command, { comp_conf, "INCLUDE_DIRECTORY" }, comp_conf.header_directory);
+       command, {comp_conf, "INCLUDE_DIRECTORY"}, comp_conf.header_directories);
    return command;
 }
 
@@ -59,7 +60,8 @@ bool try_compile(const compiler_config& comp_conf, project_config& proj_config)
    while(it != ite && result)
    {
       std::filesystem::path output;
-      result = result && try_compile(command, comp_conf, proj_config, *it, output);
+      result
+          = result && try_compile(command, comp_conf, proj_config, *it, output);
       if(result)
       {
          proj_config.object_files.emplace_back(output);
@@ -100,16 +102,22 @@ bool try_link(const compiler_config& comp_conf, project_config& proj_config)
 
 int main(int argc, char** argv)
 {
-   compiler_config comp_conf;
-   project_config proj_conf;
    input command_input;
 
-   int parse_result = parse_input(argc, argv, command_input);
-   if (parse_result != 0)
+   error_status::type parse_result = parse_input(argc, argv, command_input);
+   if(parse_result != error_status::STATUS_OK)
       return parse_result;
 
-   parse_compiler_config parser;
-   comp_conf = parser.parse(command_input.compiler_config);
+   parse_compiler_config comp_parser;
+   parse_projet_config project_parser;
+   compiler_config comp_conf = comp_parser.parse(command_input.compiler_config);
+   project_config proj_conf
+       = project_parser.parse(command_input.project_config);
+
+   if(comp_parser.error)
+      return error_status::COMPILER_FILE_PARSING_FAILED;
+   if(project_parser.error)
+      return error_status::PROJECT_FILE_PARSING_FAILED;
 
    bool compile_result = try_compile(comp_conf, proj_conf);
    if(compile_result)
@@ -122,11 +130,16 @@ int main(int argc, char** argv)
          std::cout << "linking " << proj_conf.executable_name << " ok !"
                    << std::endl;
       }
+      else
+      {
+         return error_status::LINKING_FAILED;
+      }
    }
-   if(!compile_result)
+   else
    {
       std::cout << "compiling " << proj_conf.executable_name << " fail !"
                 << std::endl;
+      return error_status::COMPILATION_FAILED;
    }
-   return 0;
+   return error_status::STATUS_OK;
 }

@@ -7,7 +7,7 @@
 #include <locale>
 
 // trim from start
-template <typename T> static inline auto ltrim(T&& s) -> decltype(s)
+template <typename T> static inline T ltrim(T&& s)
 {
    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
                           std::not1(std::ptr_fun<int, int>(std::isspace))));
@@ -15,7 +15,7 @@ template <typename T> static inline auto ltrim(T&& s) -> decltype(s)
 }
 
 // trim from end
-template <typename T> static inline auto rtrim(T&& s) -> decltype(s)
+template <typename T> static inline T rtrim(T&& s)
 {
    s.erase(std::find_if(s.rbegin(), s.rend(),
                std::not1(std::ptr_fun<int, int>(std::isspace)))
@@ -25,12 +25,12 @@ template <typename T> static inline auto rtrim(T&& s) -> decltype(s)
 }
 
 // trim from both ends
-template <typename T> static inline auto trim(T&& s) -> decltype(s)
+template <typename T> static inline T trim(T&& s)
 {
    return std::move(ltrim(rtrim(s)));
 }
 
-template <typename T> static inline auto remove_quote(T&& s) -> decltype(s)
+template <typename T> static inline T remove_quote(T&& s)
 {
    s = trim(s);
    if(s.size())
@@ -53,7 +53,7 @@ template <typename T> static inline auto remove_quote(T&& s) -> decltype(s)
    return std::move(s);
 }
 
-template <typename T> static inline auto add_quote(T&& s) -> decltype(s)
+template <typename T> static inline T add_quote(T&& s)
 {
    s = trim(s);
    if(s.size())

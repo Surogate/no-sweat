@@ -12,6 +12,7 @@
 #include "boost\program_options\parsers.hpp"
 
 #include "trim.hpp"
+#include "error_status.hpp"
 
 namespace std
 {
@@ -21,14 +22,40 @@ using namespace std::experimental;
 struct input
 {
    std::filesystem::path compiler_config;
+   std::filesystem::path project_config;
 };
 
-int parse_input(int argc, char** argv, input& input_struct)
+bool verify_input(boost::program_options::variables_map& vm,
+    const std::string& key, std::filesystem::path& value)
+{
+   auto it_comp = vm.find(key);
+   if(it_comp != vm.end())
+   {
+      value
+          = remove_quote(it_comp->second.as<std::filesystem::path>().string());
+      if(std::filesystem::exists(value))
+      {
+
+         return true;
+      }
+      else
+      {
+         std::cout << "error" << std::endl;
+         std::cout << value << " not found !" << std::endl;
+         return false;
+      }
+   }
+   return false;
+}
+
+error_status::type parse_input(int argc, char** argv, input& input_struct)
 {
    boost::program_options::options_description desc("Allowed options");
    desc.add_options()("help", "produce help message")("compiler",
        boost::program_options::value<std::filesystem::path>(),
-       "compiler configuration file in xml");
+       "compiler configuration file in xml")("project",
+       boost::program_options::value<std::filesystem::path>(),
+       "project configuration file in xml");
 
    boost::program_options::variables_map vm;
    try
@@ -46,32 +73,33 @@ int parse_input(int argc, char** argv, input& input_struct)
    catch(boost::program_options::error e)
    {
       std::cout << desc << std::endl;
-      return 1;
+      return error_status::COMMAND_LINE_PARSER_FAILED;
    }
 
-   if(vm.count("help") || !vm.size() || !vm.count("compiler"))
+   if(vm.count("help") || !vm.size() || !vm.count("compiler")
+       || !vm.count("project"))
    {
       std::cout << desc << std::endl;
-      return 2;
+      return error_status::COMMAND_LINE_PARAMETER_MISSING;
    }
 
-   auto it_comp = vm.find("compiler");
-   if(it_comp != vm.end())
+   std::filesystem::path file_path;
+   bool result = verify_input(vm, "compiler", file_path);
+   if(result)
    {
-      std::filesystem::path compiler_path
-          = remove_quote(it_comp->second.as<std::filesystem::path>().string());
-      if(std::filesystem::exists(compiler_path))
-      {
-         input_struct.compiler_config = compiler_path;
-      }
-      else
-      {
-         std::cout << "error" << std::endl;
-         std::cout << compiler_path << " not found !" << std::endl;
-         return 3;
-      }
+      input_struct.compiler_config = file_path;
    }
-   return 0;
+   else
+      return error_status::COMMAND_LINE_COMPILER_INVALID;
+   result = verify_input(vm, "project", file_path);
+   if(result)
+   {
+      input_struct.project_config = file_path;
+   }
+   else
+      return error_status::COMMAND_LINE_PROJECT_INVALID;
+
+   return error_status::STATUS_OK;
 }
 
 #endif //! INPUT_HPP

@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClInclude Include="command_seeker.h" />
     <ClInclude Include="configuration_structure.hpp" />
+    <ClInclude Include="error_status.hpp" />
     <ClInclude Include="input.hpp" />
     <ClInclude Include="trim.hpp" />
     <ClInclude Include="windows_implementation.hpp" />
