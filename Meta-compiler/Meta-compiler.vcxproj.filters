@@ -24,6 +24,9 @@
     <ClCompile Include="command_seeker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="configuration_structure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="trim.hpp">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="configuration_structure.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

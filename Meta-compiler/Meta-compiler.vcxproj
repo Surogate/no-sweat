@@ -79,6 +79,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\Home\ancel\GitHub\boost\stage\lib;D:\Home\ancel\GitHub\pugixml\scripts\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pugixml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,12 +124,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="command_seeker.cpp" />
+    <ClCompile Include="configuration_structure.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="windows_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="command_seeker.h" />
     <ClInclude Include="configuration_structure.hpp" />
+    <ClInclude Include="input.hpp" />
     <ClInclude Include="trim.hpp" />
     <ClInclude Include="windows_implementation.hpp" />
   </ItemGroup>

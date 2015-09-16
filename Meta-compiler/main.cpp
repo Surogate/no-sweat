@@ -5,52 +5,49 @@
 #include <map>
 #include <experimental\filesystem>
 
-#include "pugixml.hpp"
-#include "boost\program_options\variables_map.hpp"
-#include "boost\program_options\options_description.hpp"
-#include "boost\program_options\positional_options.hpp"
-#include "boost\program_options\options_description.hpp"
-#include "boost\program_options\cmdline.hpp"
-#include "boost\program_options\parsers.hpp"
-
 #include "trim.hpp"
 #include "configuration_structure.hpp"
 #include "command_seeker.h"
 #include "windows_implementation.hpp"
+#include "input.hpp"
 
 namespace std
 {
 using namespace std::experimental;
 }
 
-bool try_compile(const compiler_config& comp_conf,
+bool try_compile(std::string command, const compiler_config& comp_conf,
     const project_config& proj_config, const std::filesystem::path source_file,
     std::filesystem::path& output)
 {
    auto dir = remove_quote(proj_config.output_directory.string());
    dir += source_file.filename().stem().generic_string() + ".obj";
+   std::filesystem::remove(output);
    output = add_quote(dir);
-
-   std::string command = comp_conf.compiler_executable.string();
-
-   add_to_command(
-       command, {comp_conf, std::vector<std::string>{"JUST_COMPILE",
-                                "EXCEPTION_ENABLE", "DYNAMIC_COMPILATION"}});
-
-   add_to_command(
-       command, {comp_conf, "INCLUDE_DIRECTORY"}, proj_config.header_directory);
-   add_to_command(
-       command, {comp_conf, "INCLUDE_DIRECTORY"}, comp_conf.header_directory);
 
    add_to_command(command, {comp_conf, "OUTPUT_OBJECT_FILE"}, output.string());
    add_to_command(command, source_file.string());
 
    std::cout << "compile " << source_file << " to " << output << std::endl;
-   output = remove_quote(output.string());
-   std::filesystem::remove(output);
-   output = add_quote(output.string());
+
    return windows::execute_command(command)
        && std::filesystem::exists(remove_quote(output.string()));
+}
+
+std::string prepare_command(const compiler_config& comp_conf,
+   const project_config& proj_config)
+{
+   std::string command = comp_conf.compiler_executable.string();
+
+   add_to_command(
+      command, { comp_conf, std::vector<std::string>{"JUST_COMPILE",
+      "EXCEPTION_ENABLE", "DYNAMIC_COMPILATION"} });
+
+   add_to_command(
+      command, { comp_conf, "INCLUDE_DIRECTORY" }, proj_config.header_directory);
+   add_to_command(
+      command, { comp_conf, "INCLUDE_DIRECTORY" }, comp_conf.header_directory);
+   return command;
 }
 
 bool try_compile(const compiler_config& comp_conf, project_config& proj_config)
@@ -58,10 +55,11 @@ bool try_compile(const compiler_config& comp_conf, project_config& proj_config)
    bool result = true;
    auto it = proj_config.input_files.begin();
    auto ite = proj_config.input_files.end();
+   std::string command = prepare_command(comp_conf, proj_config);
    while(it != ite && result)
    {
       std::filesystem::path output;
-      result = result && try_compile(comp_conf, proj_config, *it, output);
+      result = result && try_compile(command, comp_conf, proj_config, *it, output);
       if(result)
       {
          proj_config.object_files.emplace_back(output);
@@ -100,75 +98,32 @@ bool try_link(const compiler_config& comp_conf, project_config& proj_config)
    return windows::execute_command(command) && std::filesystem::exists(output);
 }
 
-compiler_config parse_compiler_config(
-    const std::filesystem::path& comp_file_path)
-{
-   return compiler_config();
-}
-
 int main(int argc, char** argv)
 {
-   boost::program_options::options_description desc("Allowed options");
-   desc.add_options()("help", "produce help message")("compiler",
-       boost::program_options::value<std::filesystem::path>(),
-       "compiler configuration file in xml");
-
-   boost::program_options::variables_map vm;
-   try
-   {
-      boost::program_options::store(
-          boost::program_options::command_line_parser(argc, argv)
-              .options(desc)
-              .style(boost::program_options::command_line_style::unix_style
-                  | boost::program_options::command_line_style::
-                        allow_long_disguise)
-              .allow_unregistered()
-              .run(),
-          vm);
-   }
-   catch(boost::program_options::error e)
-   {
-      std::cout << desc << std::endl;
-      return 0;
-   }
-
-   if(vm.count("help") || !vm.size() || !vm.count("compiler"))
-   {
-      std::cout << desc << std::endl;
-      return 0;
-   }
-
    compiler_config comp_conf;
    project_config proj_conf;
+   input command_input;
 
-   auto it_comp = vm.find("compiler");
-   if(it_comp != vm.end())
-   {
-      std::filesystem::path compiler_path
-          = remove_quote(it_comp->second.as<std::filesystem::path>().string());
-      if(std::filesystem::exists(compiler_path))
-         comp_conf = parse_compiler_config(compiler_path);
-      else
-      {
-         std::cout << "error" << std::endl;
-         std::cout << compiler_path << " not found !" << std::endl;
-         return 1;
-      }
-   }
+   int parse_result = parse_input(argc, argv, command_input);
+   if (parse_result != 0)
+      return parse_result;
 
-   bool result = try_compile(comp_conf, proj_conf);
-   if(result)
+   parse_compiler_config parser;
+   comp_conf = parser.parse(command_input.compiler_config);
+
+   bool compile_result = try_compile(comp_conf, proj_conf);
+   if(compile_result)
    {
       std::cout << "compile " << proj_conf.executable_name << " ok !"
                 << std::endl;
-      result = try_link(comp_conf, proj_conf);
-      if(result)
+      compile_result = try_link(comp_conf, proj_conf);
+      if(compile_result)
       {
          std::cout << "linking " << proj_conf.executable_name << " ok !"
                    << std::endl;
       }
    }
-   if(!result)
+   if(!compile_result)
    {
       std::cout << "compiling " << proj_conf.executable_name << " fail !"
                 << std::endl;

@@ -1,7 +1,7 @@
 <xml>
 <compiler>
 <name>VS14</name>
-<compiler_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\cl.exe</executable>
+<compiler_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\cl.exe</compiler_executable>
 <linker_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe</linker_executable>
 <include_directories>
 <dir>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include</dir>
@@ -36,6 +36,10 @@
 <item><key>JUST_COMPILE</key><value>/c</value></item>
 <item><key>OUTPUT_EXECUTABLE</key><value>/OUT:</value></item>
 <item><key>LIBRARY_DIRECTORY</key><value>/LIBPATH:</value></item>
+<item><key>DATA_EXECUTION_PREVENTION</key><value>/NXCOMPAT</value></item>
+<item><key>RANDOMIZED_BASE_ADDRESS</key><value>/DYNAMICBASE</value></item>
+<item><key>DYNAMIC_COMPILATION</key><value>/MD</value></item>
+<item><key>STATIC_COMPILATION</key><value>/MT</value></item>
 </command_dictionnary>
 </compiler>
 </xml>

@@ -37,7 +37,7 @@ bool execute_command(const std::string& command)
    windows::PROCESS_INFORMATION procinfo;
    std::memset(&stpinfo, 0, sizeof(stpinfo));
    std::memset(&procinfo, 0, sizeof(procinfo));
-   stpinfo.wShowWindow = TRUE;
+   stpinfo.wShowWindow = FALSE;
    stpinfo.cb = sizeof(stpinfo);
    windows::BOOL result
        = windows::CreateProcess(NULL, (char*)command.c_str(), NULL, NULL, TRUE,
@@ -50,6 +50,7 @@ bool execute_command(const std::string& command)
    }
    else
    {
+      WaitForSingleObject(procinfo.hThread, INFINITE);
       WaitForSingleObject(procinfo.hProcess, INFINITE);
    }
    windows::CloseHandle(procinfo.hProcess);
