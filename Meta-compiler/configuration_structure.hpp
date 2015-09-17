@@ -16,32 +16,13 @@ using namespace std::experimental;
 struct project_config
 {
    std::string name;
-
-   std::vector<std::filesystem::path> input_files /*= {
-       R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\main.cpp).",
-       R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\windows_implementation.cpp).",
-       R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\command_seeker.cpp).",
-       R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\configuration_structure.cpp)."}*/;
-
+   std::vector<std::filesystem::path> input_files;
    std::vector<std::filesystem::path> object_files;
-
-   std::vector<std::filesystem::path> header_directories
-       /*= {R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler).",
-           R".(D:\Home\ancel\GitHub\pugixml\src).",
-           R".(D:\Home\ancel\GitHub\boost)."}*/;
-
-   std::vector<std::filesystem::path> libraries_directories /*= {
-       R".(D:\Home\ancel\GitHub\boost\stage\lib).",
-       R".(D:\Home\ancel\GitHub\pugixml\scripts\Release)."}*/;
-
-   std::vector<std::filesystem::path> libraries_names
-       /* = {"libboost_program_options-vc140-mt-1_59.lib", "pugixml.lib"}*/;
-
-   std::filesystem::path output_directory
-       /*= R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\)."*/;
-
-   std::filesystem::path executable_name
-       /*= R".(D:\Home\ancel\GitHub\no-sweat\Meta-compiler\meta_comp.exe)."*/;
+   std::vector<std::filesystem::path> header_directories;
+   std::vector<std::filesystem::path> libraries_directories;
+   std::vector<std::filesystem::path> libraries_names;
+   std::filesystem::path output_directory;
+   std::filesystem::path executable_name;
 };
 
 struct compiler_config
@@ -49,14 +30,10 @@ struct compiler_config
    std::string name;
    std::filesystem::path compiler_executable;
    std::filesystem::path linker_executable;
-
    std::vector<std::filesystem::path> object_files;
-
    std::vector<std::filesystem::path> header_directories;
-
    std::vector<std::filesystem::path> libraries_directories;
    std::vector<std::filesystem::path> libraries_names;
-
    std::map<std::string, std::string> commands;
 };
 
