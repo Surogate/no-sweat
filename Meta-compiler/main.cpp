@@ -103,13 +103,13 @@ int main(int argc, char** argv)
    {
       std::cout << "error parsing " << command_input.compiler_config
                 << std::endl;
-      return error_status::COMPILER_FILE_PARSING_FAILED;
+      return error_status::FILE_PARSING_FAILED;
    }
    project_parser.parse(command_input.project_config);
    if(project_parser.error)
    {
       std::cout << "error parsing " << command_input.project_config;
-      return error_status::PROJECT_FILE_PARSING_FAILED;
+      return error_status::FILE_PARSING_FAILED;
    }
    auto configurations = project_parser.results;
 
