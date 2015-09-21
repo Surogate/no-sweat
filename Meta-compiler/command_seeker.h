@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <experimental\filesystem>
+#include "configuration_structure.hpp"
 
 namespace std
 {
@@ -19,9 +20,9 @@ struct command_seeker
 
    command_seeker(const std::vector<std::string>& input_values);
 
-   command_seeker(const compiler_config& conf, const std::string& command_name);
+   command_seeker(const configuration_file& conf, const std::string& command_name);
 
-   command_seeker(const compiler_config& conf,
+   command_seeker(const configuration_file& conf,
        const std::vector<std::string>& command_names);
 
    inline const std::vector<std::string>& get() const { return values; }

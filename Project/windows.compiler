@@ -1,45 +1,47 @@
 <xml>
-<compiler>
-<name>VS14</name>
-<compiler_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\cl.exe</compiler_executable>
-<linker_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe</linker_executable>
-<include_directories>
-<dir>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include</dir>
-<dir>C:\Program Files (x86)\Windows Kits\8.1\Include\um</dir>
-<dir>C:\Program Files (x86)\Windows Kits\10\Include\10.0.10150.0\ucrt</dir>
-<dir>C:\Program Files (x86)\Windows Kits\8.1\Include\shared</dir>
-<dir>C:\Program Files (x86)\Windows Kits\8.1\Include\winrt</dir>
-</include_directories>
-<library_directories>
-<dir>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\lib</dir>
-<dir>C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86</dir>
-<dir>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10150.0\ucrt\x86</dir>
-</library_directories>
-<libraries>
-<lib>kernel32.lib</lib>
-<lib>user32.lib</lib>
-<lib>gdi32.lib</lib>
-<lib>winspool.lib</lib>
-<lib>comdlg32.lib</lib>
-<lib>advapi32.lib</lib>
-<lib>shell32.lib</lib>
-<lib>ole32.lib</lib>
-<lib>oleaut32.lib</lib>
-<lib>uuid.lib</lib>
-<lib>odbc32.lib</lib>
-<lib>odbccp32.lib</lib>
-</libraries>
-<command_dictionnary>
-<item><key>OUTPUT_OBJECT_FILE</key><value>/Fo:</value></item>
-<item><key>INCLUDE_DIRECTORY</key><value>/I</value></item>
-<item><key>EXCEPTION_ENABLE</key><value>/EHsc</value></item>
-<item><key>JUST_COMPILE</key><value>/c</value></item>
-<item><key>OUTPUT_EXECUTABLE</key><value>/OUT:</value></item>
-<item><key>LIBRARY_DIRECTORY</key><value>/LIBPATH:</value></item>
-<item><key>DATA_EXECUTION_PREVENTION</key><value>/NXCOMPAT</value></item>
-<item><key>RANDOMIZED_BASE_ADDRESS</key><value>/DYNAMICBASE</value></item>
-<item><key>DYNAMIC_COMPILATION</key><value>/MD</value></item>
-<item><key>STATIC_COMPILATION</key><value>/MT</value></item>
-</command_dictionnary>
-</compiler>
+	<project>
+		<name>VS14</name>
+		<compiler_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\cl.exe</compiler_executable>
+		<linker_executable>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe</linker_executable>
+		<header_directories>
+			<dir>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include</dir>
+			<dir>C:\Program Files (x86)\Windows Kits\8.1\Include\um</dir>
+			<dir>C:\Program Files (x86)\Windows Kits\10\Include\10.0.10150.0\ucrt</dir>
+			<dir>C:\Program Files (x86)\Windows Kits\8.1\Include\shared</dir>
+			<dir>C:\Program Files (x86)\Windows Kits\8.1\Include\winrt</dir>
+		</header_directories>
+		<libraries_directories>
+			<dir>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\lib</dir>
+			<dir>C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86</dir>
+			<dir>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10150.0\ucrt\x86</dir>
+		</libraries_directories>
+		<libraries_names>
+			<lib>kernel32.lib</lib>
+			<lib>user32.lib</lib>
+			<lib>gdi32.lib</lib>
+			<lib>winspool.lib</lib>
+			<lib>comdlg32.lib</lib>
+			<lib>advapi32.lib</lib>
+			<lib>shell32.lib</lib>
+			<lib>ole32.lib</lib>
+			<lib>oleaut32.lib</lib>
+			<lib>uuid.lib</lib>
+			<lib>odbc32.lib</lib>
+			<lib>odbccp32.lib</lib>
+		</libraries_names>
+		<option_dictionnary>
+			<item><key>OUTPUT_OBJECT_FILE</key><value>/Fo:</value></item>
+			<item><key>INCLUDE_DIRECTORY</key><value>/I</value></item>
+			<item><key>EXCEPTION_ENABLE</key><value>/EHsc</value></item>
+			<item><key>JUST_COMPILE</key><value>/c</value></item>
+			<item><key>OUTPUT_EXECUTABLE</key><value>/OUT:</value></item>
+			<item><key>LIBRARY_DIRECTORY</key><value>/LIBPATH:</value></item>
+			<item><key>DATA_EXECUTION_PREVENTION</key><value>/NXCOMPAT</value></item>
+			<item><key>RANDOMIZED_BASE_ADDRESS</key><value>/DYNAMICBASE</value></item>
+			<item><key>DYNAMIC_STD_LIB</key><value>/MD</value></item>
+			<item><key>STATIC_STD_LIB</key><value>/MT</value></item>
+			<item><key>DYNAMIC_STD_LIB_DEBUG</key><value>/MDd</value></item>
+			<item><key>STATIC_STD_LIB_DEBUG</key><value>/MTd</value></item>
+		</option_dictionnary>
+	</project>
 </xml>

@@ -3,6 +3,8 @@
 #include "configuration_structure.hpp"
 #include "trim.hpp"
 
+#include <iostream>
+
 command_seeker::command_seeker(const std::string& input_value)
 {
    values.push_back(input_value);
@@ -14,25 +16,28 @@ command_seeker::command_seeker(const std::vector<std::string>& input_values)
 }
 
 command_seeker::command_seeker(
-    const compiler_config& conf, const std::string& command_name)
+    const configuration_file& conf, const std::string& command_name)
 {
-   auto it = conf.commands.find(command_name);
-   if(it != conf.commands.end())
+   auto it = conf.option_dictionnary.find(command_name);
+   if(it != conf.option_dictionnary.end())
    {
       values.push_back(it->second);
    }
 }
 
 command_seeker::command_seeker(
-    const compiler_config& conf, const std::vector<std::string>& command_names)
+    const configuration_file& conf, const std::vector<std::string>& command_names)
 {
-   auto ite = conf.commands.end();
+   auto ite = conf.option_dictionnary.end();
    for(auto& name : command_names)
    {
-      auto it = conf.commands.find(name);
+      auto it = conf.option_dictionnary.find(name);
       if(it != ite)
       {
          values.push_back(it->second);
+      }
+      else {
+         std::cout << "option " << name << " not found in option_dictionnary" << std::endl;
       }
    }
 }
