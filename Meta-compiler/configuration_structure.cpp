@@ -74,7 +74,7 @@ configuration_file operator+(
 }
 
 std::vector<configuration_file> configuration_parser::parse(
-    const std::filesystem::path& proj_file_path)
+    const astd::filesystem::path& proj_file_path)
 {
    pugi::xml_document doc;
    auto parse_result = doc.load_file(proj_file_path.c_str());

@@ -1,7 +1,6 @@
 #ifndef INPUT_HPP
 #define INPUT_HPP
 
-#include <experimental\filesystem>
 #include <iostream>
 
 #include "boost\program_options\variables_map.hpp"
@@ -13,6 +12,7 @@
 
 #include "trim.hpp"
 #include "error_status.hpp"
+#include "afilesystem.hpp"
 
 namespace std
 {
@@ -21,19 +21,19 @@ using namespace std::experimental;
 
 struct input
 {
-   std::filesystem::path compiler_config;
-   std::filesystem::path project_config;
+   astd::filesystem::path compiler_config;
+   astd::filesystem::path project_config;
 };
 
 bool verify_input(boost::program_options::variables_map& vm,
-    const std::string& key, std::filesystem::path& value)
+    const std::string& key, astd::filesystem::path& value)
 {
    auto it_comp = vm.find(key);
    if(it_comp != vm.end())
    {
       value
-          = remove_quote(it_comp->second.as<std::filesystem::path>().string());
-      if(std::filesystem::exists(value))
+          = remove_quote(it_comp->second.as<astd::filesystem::path>().string());
+      if(astd::filesystem::exists(value))
       {
 
          return true;
@@ -52,9 +52,9 @@ error_status::type parse_input(int argc, char** argv, input& input_struct)
 {
    boost::program_options::options_description desc("Allowed options");
    desc.add_options()("help", "produce help message")("compiler",
-       boost::program_options::value<std::filesystem::path>(),
+       boost::program_options::value<astd::filesystem::path>(),
        "compiler configuration file in xml")("project",
-       boost::program_options::value<std::filesystem::path>(),
+       boost::program_options::value<astd::filesystem::path>(),
        "project configuration file in xml");
 
    boost::program_options::variables_map vm;
@@ -83,7 +83,7 @@ error_status::type parse_input(int argc, char** argv, input& input_struct)
       return error_status::COMMAND_LINE_PARAMETER_MISSING;
    }
 
-   std::filesystem::path file_path;
+   astd::filesystem::path file_path;
    bool result = verify_input(vm, "compiler", file_path);
    if(result)
    {

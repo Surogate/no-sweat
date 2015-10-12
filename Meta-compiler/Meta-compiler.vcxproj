@@ -129,6 +129,7 @@
     <ClCompile Include="windows_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="afilesystem.hpp" />
     <ClInclude Include="command_seeker.h" />
     <ClInclude Include="configuration_structure.hpp" />
     <ClInclude Include="error_status.hpp" />

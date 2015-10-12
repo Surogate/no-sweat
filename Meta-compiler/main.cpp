@@ -18,7 +18,7 @@ using namespace std::experimental;
 }
 
 bool try_compile(std::string command, const configuration_file& project,
-    const std::filesystem::path source_file, std::filesystem::path& output)
+    const astd::filesystem::path source_file, astd::filesystem::path& output)
 {
    auto dir = remove_quote(project.output_directory.string());
    dir += source_file.filename().stem().generic_string() + ".obj";
@@ -31,7 +31,7 @@ bool try_compile(std::string command, const configuration_file& project,
    std::cout << "compile " << source_file << " to " << output << std::endl;
 
    return windows::execute_command(command)
-       && std::filesystem::exists(remove_quote(output.string()));
+       && astd::filesystem::exists(remove_quote(output.string()));
 }
 
 std::string prepare_command(const configuration_file& project)
@@ -55,7 +55,7 @@ bool try_compile(configuration_file& project)
    std::string command = prepare_command(project);
    while(it != ite && result)
    {
-      std::filesystem::path output;
+      astd::filesystem::path output;
       result = result && try_compile(command, project, *it, output);
       if(result)
       {
@@ -83,10 +83,10 @@ bool try_link(const configuration_file& project)
        command, {project, "OUTPUT_EXECUTABLE"}, project.executable_name);
 
    std::cout << "link " << project.executable_name << std::endl;
-   std::filesystem::path output
+   astd::filesystem::path output
        = remove_quote(project.executable_name.string());
-   std::filesystem::remove(output);
-   return windows::execute_command(command) && std::filesystem::exists(output);
+   astd::filesystem::remove(output);
+   return windows::execute_command(command) && astd::filesystem::exists(output);
 }
 
 int main(int argc, char** argv)

@@ -4,13 +4,8 @@
 #include <string>
 #include <vector>
 
-#include <experimental\filesystem>
+#include "afilesystem.hpp"
 #include "configuration_structure.hpp"
-
-namespace std
-{
-using namespace std::experimental;
-}
 
 struct compiler_config;
 
@@ -32,12 +27,12 @@ struct command_seeker
 
 void add_to_command(std::string& command, const command_seeker& value);
 void add_to_command(
-    std::string& command, const std::vector<std::filesystem::path>& values);
+    std::string& command, const std::vector<astd::filesystem::path>& values);
 
 void add_to_command(std::string& command, const command_seeker& command_name,
-    const std::filesystem::path& to_be_added);
+    const astd::filesystem::path& to_be_added);
 
 void add_to_command(std::string& command, const command_seeker& command_name,
-    const std::vector<std::filesystem::path>& to_be_added);
+    const std::vector<astd::filesystem::path>& to_be_added);
 
 #endif //! COMMAND_SEEKER_HPP

@@ -3,16 +3,10 @@
 
 #include <vector>
 #include <string>
-#include <experimental\filesystem>
 #include <map>
 #include <functional>
+#include "afilesystem.hpp"
 #include "pugixml.hpp"
-
-namespace std
-{
-using namespace std::experimental;
-}
-
 struct configuration_file
 {
    std::vector<std::string> name;
@@ -22,16 +16,16 @@ struct configuration_file
    std::string compilation_command;
    std::string linking_command;
 
-   std::vector<std::filesystem::path> input_files;
-   std::vector<std::filesystem::path> object_files;
-   std::vector<std::filesystem::path> header_directories;
-   std::vector<std::filesystem::path> libraries_directories;
-   std::vector<std::filesystem::path> libraries_names;
-   std::filesystem::path output_directory;
-   std::filesystem::path executable_name;
+   std::vector<astd::filesystem::path> input_files;
+   std::vector<astd::filesystem::path> object_files;
+   std::vector<astd::filesystem::path> header_directories;
+   std::vector<astd::filesystem::path> libraries_directories;
+   std::vector<astd::filesystem::path> libraries_names;
+   astd::filesystem::path output_directory;
+   astd::filesystem::path executable_name;
 
-   std::filesystem::path compiler_executable;
-   std::filesystem::path linker_executable;
+   astd::filesystem::path compiler_executable;
+   astd::filesystem::path linker_executable;
    std::map<std::string, std::string> option_dictionnary;
 };
 
@@ -53,7 +47,7 @@ configuration_file operator+(
 struct configuration_parser
 {
    std::vector<configuration_file> parse(
-       const std::filesystem::path& proj_file_path);
+       const astd::filesystem::path& proj_file_path);
    void xml_parser(const pugi::xml_node& doc);
    void compiler_parser(const pugi::xml_node& doc);
    void project_parser(const pugi::xml_node& doc);

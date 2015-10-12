@@ -49,7 +49,7 @@ void add_to_command(std::string& command, const command_seeker& value)
 }
 
 void add_to_command(
-    std::string& command, const std::vector<std::filesystem::path>& values)
+    std::string& command, const std::vector<astd::filesystem::path>& values)
 {
    for(auto& value : values)
    {
@@ -58,14 +58,14 @@ void add_to_command(
 }
 
 void add_to_command(std::string& command, const command_seeker& command_name,
-    const std::filesystem::path& to_be_added)
+    const astd::filesystem::path& to_be_added)
 {
    add_to_command(command, command_name);
    command += add_quote(to_be_added.string());
 }
 
 void add_to_command(std::string& command, const command_seeker& command_name,
-    const std::vector<std::filesystem::path>& to_be_added)
+    const std::vector<astd::filesystem::path>& to_be_added)
 {
    for(auto& adding_path : to_be_added)
    {
