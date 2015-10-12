@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <experimental\filesystem>
 
 #include "trim.hpp"
 #include "configuration_structure.hpp"
@@ -11,18 +10,14 @@
 #include "windows_implementation.hpp"
 #include "input.hpp"
 #include "error_status.hpp"
-
-namespace std
-{
-using namespace std::experimental;
-}
+#include "afilesystem.hpp"
 
 bool try_compile(std::string command, const configuration_file& project,
     const astd::filesystem::path source_file, astd::filesystem::path& output)
 {
    auto dir = remove_quote(project.output_directory.string());
    dir += source_file.filename().stem().generic_string() + ".obj";
-   std::filesystem::remove(output);
+   astd::filesystem::remove(output);
    output = add_quote(dir);
 
    add_to_command(command, {project, "OUTPUT_OBJECT_FILE"}, output.string());
