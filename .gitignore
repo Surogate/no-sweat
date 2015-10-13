@@ -28,3 +28,12 @@
 *.app
 *.suo
 no-sweat.opensdf
+vc140.pdb
+windows_implementation.obj
+Meta-compiler.tlog
+command_seeker.obj
+configuration_structure.obj
+main.obj
+Meta-compiler.Build.CppClean.log
+Meta-compiler.log
+vc140.idb

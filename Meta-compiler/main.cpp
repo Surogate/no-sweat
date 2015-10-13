@@ -97,6 +97,48 @@ bool is_composed(
    return false;
 }
 
+bool get_project(const std::vector<configuration_file>& input, const std::string& name, configuration_file& output)
+{
+   std::string lvalue, rvalue;
+   if (!is_composed(name, lvalue, rvalue))
+   {
+      auto it = std::find_if(input.begin(), input.end(),
+         [&](const configuration_file& value)
+      {
+         return value.name.front() == name;
+      });
+      if (it != input.end())
+      {
+         output = *it;
+         return true;
+      }         
+      else
+      {
+         std::cout << "warning! " << name << " unknown !" << std::endl;
+      }
+   }
+   else
+   {
+      auto it = std::find_if(input.begin(), input.end(),
+         [&](const configuration_file& value)
+      {
+         return value.name.front() == lvalue;
+      });
+      if (it != input.end())
+      {
+         if(get_project(it->configuration, rvalue, output))
+         {
+            return true;
+         }
+         else
+            std::cout << "warning! " << rvalue << " unknown in " << lvalue << std::endl;
+      }
+      else
+         std::cout << "warning! " << lvalue << " unknown !" << std::endl;
+   }
+   return false;
+}
+
 configuration_file assemble_project_to_compile(
     const std::vector<configuration_file>& input,
     std::vector<std::string>& configuration_to_execute)
@@ -108,44 +150,14 @@ configuration_file assemble_project_to_compile(
    }
    else
    {
-      std::string lvalue, rvalue;
       std::cout << "execute:" << std::endl;
-      for(auto& str : configuration_to_execute)
+      for (auto& str : configuration_to_execute)
       {
          std::cout << str << std::endl;
-         if(!is_composed(str, lvalue, rvalue))
+         configuration_file fetch;
+         if (get_project(input, str, fetch))
          {
-            auto it = std::find_if(input.begin(), input.end(),
-                [&](const configuration_file& value)
-                {
-                   return value.name.front() == str;
-                });
-            if(it != input.end())
-               result = result + *it;
-            else
-               std::cout << "warning! " << str << " unknown !" << std::endl;
-         }
-         else
-         {
-            auto it = std::find_if(input.begin(), input.end(),
-                [&](const configuration_file& value)
-                {
-                   return value.name.front() == lvalue;
-                });
-            if(it != input.end())
-            {
-               auto it_2 = std::find_if(it->configuration.begin(),
-                   it->configuration.end(), [&](const configuration_file& value)
-                   {
-                      return value.name.front() == rvalue;
-                   });
-               if(it_2 != it->configuration.end())
-                  result = result + *it_2;
-               else
-                  std::cout << "warning! " << rvalue << " unknown in " << lvalue << std::endl;
-            }
-            else
-               std::cout << "warning! " << lvalue << " unknown !" << std::endl;
+            result = result + fetch;
          }
       }
    }
@@ -161,19 +173,20 @@ int main(int argc, char** argv)
       return parse_result;
 
    configuration_parser project_parser;
-   project_parser.parse(command_input.compiler_config);
-   if(project_parser.error)
+   bool parser_error = false;
+   for (auto& project_path : command_input.project_config)
    {
-      std::cout << "error parsing " << command_input.compiler_config
-                << std::endl;
-      return error_status::FILE_PARSING_FAILED;
+      project_parser.parse(project_path);
+      if (project_parser.error)
+      {
+         std::cout << "error parsing " << project_path
+            << std::endl;
+         parser_error = true;
+      }
    }
-   project_parser.parse(command_input.project_config);
-   if(project_parser.error)
-   {
-      std::cout << "error parsing " << command_input.project_config;
+   if (parser_error)
       return error_status::FILE_PARSING_FAILED;
-   }
+
    auto configurations = project_parser.results;
 
    auto project_to_compile = assemble_project_to_compile(

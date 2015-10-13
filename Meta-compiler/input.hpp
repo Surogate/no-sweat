@@ -16,30 +16,32 @@
 
 struct input
 {
-   astd::filesystem::path compiler_config;
-   astd::filesystem::path project_config;
+   std::vector<astd::filesystem::path> project_config;
    std::vector<std::string> configuration_to_execute;
 };
 
 bool verify_input(const boost::program_options::variables_map& vm,
-    const std::string& key, astd::filesystem::path& value)
+    const std::string& key, std::vector<astd::filesystem::path>& value)
 {
    auto it_comp = vm.find(key);
    if(it_comp != vm.end())
    {
-      value
-          = remove_quote(it_comp->second.as<astd::filesystem::path>().string());
-      if(astd::filesystem::exists(value))
+      value = it_comp->second.as<std::vector<astd::filesystem::path>>();
+      bool result = true;
+      for (auto& path : value)
       {
-         return true;
+         path = remove_quote(path.string());
+         result = result && astd::filesystem::exists(path);
+         if (!result)
+         {
+            std::cout << "error!" << std::endl;
+            std::cout << path << " not found !" << std::endl;
+         }
       }
-      else
-      {
-         std::cout << "error" << std::endl;
-         std::cout << value << " not found !" << std::endl;
-         return false;
-      }
+      return result;
    }
+   std::cout << "error!" << std::endl;
+   std::cout << "no configuration file !" << std::endl;
    return false;
 }
 
@@ -59,9 +61,7 @@ error_status::type parse_input(int argc, char** argv, input& input_struct)
 {
    boost::program_options::options_description desc("Allowed options");
    desc.add_options()("help", "produce help message")
-      ("compiler", boost::program_options::value<astd::filesystem::path>(),
-       "compiler configuration file in xml")
-      ("project", boost::program_options::value<astd::filesystem::path>(),
+      ("project", boost::program_options::value<std::vector<astd::filesystem::path>>(),
        "project configuration file in xml")
       ("run", boost::program_options::value<std::vector<std::string>>(),
        "configuration name to run");
@@ -90,15 +90,12 @@ error_status::type parse_input(int argc, char** argv, input& input_struct)
       return error_status::COMMAND_LINE_PARSER_FAILED;
    }
 
-   if(vm.count("help") || !vm.size() || !vm.count("compiler")
-       || !vm.count("project"))
+   if(vm.count("help") || !vm.size() || !vm.count("project"))
    {
       std::cout << desc << std::endl;
       return error_status::COMMAND_LINE_PARAMETER_MISSING;
    }
 
-   if(!verify_input(vm, "compiler", input_struct.compiler_config))
-      return error_status::COMMAND_LINE_COMPILER_INVALID;
    if(!verify_input(vm, "project", input_struct.project_config))
       return error_status::COMMAND_LINE_PROJECT_INVALID;
    if (!verify_input(vm, "run", input_struct.configuration_to_execute))
