@@ -87,6 +87,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\Home\ancel\GitHub\boost;D:\Home\ancel\GitHub\pugixml\src;D:\Home\ancel\GitHub\no-sweat\Meta-compiler\Debug;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -106,7 +106,7 @@ void configuration_parser::compiler_parser(const pugi::xml_node& doc)
    }
 }
 
-void configuration_parser::project_parser(const pugi::xml_node& doc)
+void configuration_parser::project_parser(const pugi::xml_node& doc) //-V524
 {
    results.push_back(configuration_file());
    for(auto& node : doc)
@@ -135,7 +135,8 @@ void configuration_parser::sub_configuration_parser(const pugi::xml_node& doc)
    configuration_parser parser;
    parser.project_parser(doc);
    error = parser.error;
-   results.back().configuration.insert(results.back().configuration.end(), parser.results.begin(), parser.results.end());
+   results.back().configuration.insert(results.back().configuration.end(),
+       parser.results.begin(), parser.results.end());
 }
 
 void configuration_parser::input_files_parser(const pugi::xml_node& doc)

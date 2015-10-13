@@ -13,7 +13,7 @@
 #include "afilesystem.hpp"
 
 bool try_compile(std::string command, const configuration_file& project,
-    const astd::filesystem::path source_file, astd::filesystem::path& output)
+    const astd::filesystem::path& source_file, astd::filesystem::path& output)
 {
    auto dir = remove_quote(project.output_directory.string());
    dir += source_file.filename().stem().generic_string() + ".obj";
@@ -91,27 +91,29 @@ bool is_composed(
    if(pos != std::string::npos)
    {
       lvalue = value.substr(0, pos);
-      rvalue = value.substr(pos + sizeof("::") - 1); // we are already on the first letter
+      rvalue = value.substr(
+          pos + sizeof("::") - 1); // we are already on the first letter
       return true;
    }
    return false;
 }
 
-bool get_project(const std::vector<configuration_file>& input, const std::string& name, configuration_file& output)
+bool get_project(const std::vector<configuration_file>& input,
+    const std::string& name, configuration_file& output)
 {
    std::string lvalue, rvalue;
-   if (!is_composed(name, lvalue, rvalue))
+   if(!is_composed(name, lvalue, rvalue))
    {
       auto it = std::find_if(input.begin(), input.end(),
-         [&](const configuration_file& value)
-      {
-         return value.name.front() == name;
-      });
-      if (it != input.end())
+          [&](const configuration_file& value)
+          {
+             return value.name.front() == name;
+          });
+      if(it != input.end())
       {
          output = *it;
          return true;
-      }         
+      }
       else
       {
          std::cout << "warning! " << name << " unknown !" << std::endl;
@@ -120,18 +122,19 @@ bool get_project(const std::vector<configuration_file>& input, const std::string
    else
    {
       auto it = std::find_if(input.begin(), input.end(),
-         [&](const configuration_file& value)
-      {
-         return value.name.front() == lvalue;
-      });
-      if (it != input.end())
+          [&](const configuration_file& value)
+          {
+             return value.name.front() == lvalue;
+          });
+      if(it != input.end())
       {
          if(get_project(it->configuration, rvalue, output))
          {
             return true;
          }
          else
-            std::cout << "warning! " << rvalue << " unknown in " << lvalue << std::endl;
+            std::cout << "warning! " << rvalue << " unknown in " << lvalue
+                      << std::endl;
       }
       else
          std::cout << "warning! " << lvalue << " unknown !" << std::endl;
@@ -151,11 +154,11 @@ configuration_file assemble_project_to_compile(
    else
    {
       std::cout << "execute:" << std::endl;
-      for (auto& str : configuration_to_execute)
+      for(auto& str : configuration_to_execute)
       {
          std::cout << str << std::endl;
          configuration_file fetch;
-         if (get_project(input, str, fetch))
+         if(get_project(input, str, fetch))
          {
             result = result + fetch;
          }
@@ -174,17 +177,16 @@ int main(int argc, char** argv)
 
    configuration_parser project_parser;
    bool parser_error = false;
-   for (auto& project_path : command_input.project_config)
+   for(auto& project_path : command_input.project_config)
    {
       project_parser.parse(project_path);
-      if (project_parser.error)
+      if(project_parser.error)
       {
-         std::cout << "error parsing " << project_path
-            << std::endl;
+         std::cout << "error parsing " << project_path << std::endl;
          parser_error = true;
       }
    }
-   if (parser_error)
+   if(parser_error)
       return error_status::FILE_PARSING_FAILED;
 
    auto configurations = project_parser.results;

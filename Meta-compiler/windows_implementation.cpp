@@ -18,10 +18,11 @@ std::string GetLastErrorAsString()
 
    windows::LPSTR messageBuffer = nullptr;
 
-   size_t size = windows::FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
-           | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-       NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-       (windows::LPSTR)&messageBuffer, 0, NULL);
+   size_t size
+       = std::size_t(windows::FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
+               | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+           NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+           (windows::LPSTR)&messageBuffer, 0, NULL));
 
    std::string message(messageBuffer, size);
 
@@ -55,7 +56,7 @@ bool execute_command(const std::string& command)
    }
    windows::CloseHandle(procinfo.hProcess);
    windows::CloseHandle(procinfo.hThread);
-   return result == TRUE;
+   return result != FALSE;
 }
 }
 #endif //!_WIN32

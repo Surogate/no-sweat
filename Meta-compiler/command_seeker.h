@@ -15,7 +15,8 @@ struct command_seeker
 
    command_seeker(const std::vector<std::string>& input_values);
 
-   command_seeker(const configuration_file& conf, const std::string& command_name);
+   command_seeker(
+       const configuration_file& conf, const std::string& command_name);
 
    command_seeker(const configuration_file& conf,
        const std::vector<std::string>& command_names);
