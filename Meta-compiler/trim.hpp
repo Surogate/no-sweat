@@ -5,6 +5,7 @@
 #include <functional>
 #include <cctype>
 #include <locale>
+#include <type_traits>
 
 // trim from start
 template <typename T> static inline T ltrim(T&& s)
@@ -33,15 +34,17 @@ template <typename T> static inline T trim(T&& s)
 template <typename T> static inline T remove_quote(T&& s)
 {
    s = trim(s);
+   typedef typename std::remove_reference<T>::type::value_type value_type;
+   auto quote_char = value_type('"');
    if(s.size())
    {
-      if(s.back() == '"')
+      if(s.back() == quote_char)
          s.pop_back();
-      if(s.front() == '"' && s.size() == 1)
+      if(s.front() == quote_char && s.size() == 1)
       {
          s.clear();
       }
-      if(s.front() == '"')
+      if(s.front() == quote_char)
       {
          for(std::size_t i = 1; i < s.size(); ++i)
          {
@@ -56,20 +59,24 @@ template <typename T> static inline T remove_quote(T&& s)
 template <typename T> static inline T add_quote(T&& s)
 {
    s = trim(s);
+   typedef typename std::remove_reference<T>::type::value_type value_type;
+   auto quote_char = value_type('"');
    if(s.size())
    {
-      if(s.back() != '"')
+      if(s.back() != quote_char)
       {
-         s.push_back('"');
+         s.push_back(quote_char);
       }
-      if(s.front() != '"')
+      if(s.front() != quote_char)
       {
-         s = "\"" + s;
+         s = quote_char + s;
       }
    }
    else
    {
-      s = "\"\"";
+      s.resize(2);
+      s[0] = quote_char;
+      s[1] = quote_char;
    }
 
    return std::move(s);

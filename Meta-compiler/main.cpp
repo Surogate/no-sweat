@@ -84,6 +84,74 @@ bool try_link(const configuration_file& project)
    return windows::execute_command(command) && astd::filesystem::exists(output);
 }
 
+bool is_composed(
+    const std::string& value, std::string& lvalue, std::string& rvalue)
+{
+   auto pos = value.find_first_of("::");
+   if(pos != std::string::npos)
+   {
+      lvalue = value.substr(0, pos);
+      rvalue = value.substr(pos + sizeof("::") - 1); // we are already on the first letter
+      return true;
+   }
+   return false;
+}
+
+configuration_file assemble_project_to_compile(
+    const std::vector<configuration_file>& input,
+    std::vector<std::string>& configuration_to_execute)
+{
+   configuration_file result;
+   if(!configuration_to_execute.size())
+   {
+      std::cout << "warning, no configuration executed" << std::endl;
+   }
+   else
+   {
+      std::string lvalue, rvalue;
+      std::cout << "execute:" << std::endl;
+      for(auto& str : configuration_to_execute)
+      {
+         std::cout << str << std::endl;
+         if(!is_composed(str, lvalue, rvalue))
+         {
+            auto it = std::find_if(input.begin(), input.end(),
+                [&](const configuration_file& value)
+                {
+                   return value.name.front() == str;
+                });
+            if(it != input.end())
+               result = result + *it;
+            else
+               std::cout << "warning! " << str << " unknown !" << std::endl;
+         }
+         else
+         {
+            auto it = std::find_if(input.begin(), input.end(),
+                [&](const configuration_file& value)
+                {
+                   return value.name.front() == lvalue;
+                });
+            if(it != input.end())
+            {
+               auto it_2 = std::find_if(it->configuration.begin(),
+                   it->configuration.end(), [&](const configuration_file& value)
+                   {
+                      return value.name.front() == rvalue;
+                   });
+               if(it_2 != it->configuration.end())
+                  result = result + *it_2;
+               else
+                  std::cout << "warning! " << rvalue << " unknown in " << lvalue << std::endl;
+            }
+            else
+               std::cout << "warning! " << lvalue << " unknown !" << std::endl;
+         }
+      }
+   }
+   return result;
+}
+
 int main(int argc, char** argv)
 {
    input command_input;
@@ -108,8 +176,8 @@ int main(int argc, char** argv)
    }
    auto configurations = project_parser.results;
 
-   auto project_to_compile = configurations.front() + configurations.back();
-   project_to_compile = project_to_compile + project_to_compile.configuration.front();
+   auto project_to_compile = assemble_project_to_compile(
+       configurations, command_input.configuration_to_execute);
 
    bool compile_result = try_compile(project_to_compile);
    if(compile_result)
