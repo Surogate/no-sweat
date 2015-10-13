@@ -1,4 +1,4 @@
-﻿Build started 13/10/2015 11:21:33.
+﻿Build started 13/10/2015 11:36:57.
      1>Project "D:\Home\ancel\GitHub\no-sweat\Meta-compiler\Meta-compiler.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ID:\Home\ancel\GitHub\boost /ID:\Home\ancel\GitHub\pugixml\src /I"D:\Home\ancel\GitHub\no-sweat\Meta-compiler\Debug" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
@@ -13,4 +13,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.25
+Time Elapsed 00:00:03.81
