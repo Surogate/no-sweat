@@ -34,7 +34,7 @@ std::string prepare_command(const configuration_file& project)
    std::string command = project.compiler_executable.string();
 
    add_to_command(
-       command, {project, std::vector<std::string>{"JUST_COMPILE",
+       command, {project, {"JUST_COMPILE",
                               "EXCEPTION_ENABLE", "DYNAMIC_STD_LIB"}});
 
    add_to_command(

@@ -36,4 +36,8 @@ void add_to_command(std::string& command, const command_seeker& command_name,
 void add_to_command(std::string& command, const command_seeker& command_name,
     const std::vector<astd::filesystem::path>& to_be_added);
 
+std::string get_value_of(
+   const std::string& name, const configuration_file& conf);
+
+
 #endif //! COMMAND_SEEKER_HPP
