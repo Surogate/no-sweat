@@ -35,3 +35,16 @@
 *.idb
 *.ilk
 *.ib_pdb_index
+/Debug/*.pdb
+/Debug/*.ilk
+/Meta-compiler/x64/Debug/*.pdb
+/Meta-compiler/x64/Debug/*.idb
+/Meta-compiler/x64/Debug/*.obj
+/Meta-compiler/x64/Debug/*
+/Meta-compiler/x64/Debug/*.log
+/Meta-compiler/x64/Debug/*.ib_pdb_index
+/Meta-compiler/Debug/*.log
+/Meta-compiler/Debug/*.idb
+/Meta-compiler/Debug/*.pdb
+/Meta-compiler/Debug/Meta-compiler.tlog/*.tlog
+/Meta-compiler/Debug/Meta-compiler.tlog/*.lastbuildstate
