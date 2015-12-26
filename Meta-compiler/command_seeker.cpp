@@ -188,4 +188,5 @@ std::string get_value_of(
          std::cerr << name << " is not found" << std::endl;
       }
    }
+   return std::string{};
 }
