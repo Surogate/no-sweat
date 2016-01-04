@@ -1,0 +1,48 @@
+<xml>
+	<project>
+		<name>meta_compiler</name>
+		<configuration>
+			<name>RELEASE</name>
+			<compilation_command>compiler_executable JUST_COMPILE EXCEPTION_ENABLE STATIC_STD_LIB INCLUDE_DIRECTORY(header_directories) OUTPUT_OBJECT_FILE(object_files) input_files</compilation_command>
+			<linking_command>linker_executable DATA_EXECUTION_PREVENTION RANDOMIZED_BASE_ADDRESS LIBRARY_DIRECTORY(libraries_directories) object_files libraries_names OUTPUT_EXECUTABLE(executable_name)</linking_command>
+			<libraries_directories>
+				<dir>D:\Home\ancel\GitHub\pugixml\scripts\Release</dir>
+			</libraries_directories>
+			<libraries_names>
+				<name>libboost_program_options-vc140-mt-1_59.lib</name>
+			</libraries_names>
+		</configuration>
+		<configuration>
+			<name>DEBUG</name>
+			<compilation_command>compiler_executable JUST_COMPILE EXCEPTION_ENABLE DYNAMIC_STD_LIB_DEBUG INCLUDE_DIRECTORY(header_directories) OUTPUT_OBJECT_FILE(object_files) input_files</compilation_command>
+			<linking_command>linker_executable DATA_EXECUTION_PREVENTION RANDOMIZED_BASE_ADDRESS LIBRARY_DIRECTORY(libraries_directories) object_files libraries_names OUTPUT_EXECUTABLE(executable_name)</linking_command>
+			<libraries_directories>
+				<dir>D:\Home\ancel\GitHub\pugixml\scripts\Debug</dir>
+			</libraries_directories>
+			<libraries_names>
+				<name>libboost_program_options-vc140-mt-gd-1_59.lib</name>
+			</libraries_names>
+		</configuration>
+		<input_files>
+			<file>D:\Home\ancel\GitHub\no-sweat\Meta-compiler\main.cpp</file>
+			<file>D:\Home\ancel\GitHub\no-sweat\Meta-compiler\windows_implementation.cpp</file>
+			<file>D:\Home\ancel\GitHub\no-sweat\Meta-compiler\command_seeker.cpp</file>
+			<file>D:\Home\ancel\GitHub\no-sweat\Meta-compiler\configuration_structure.cpp</file>
+		</input_files>
+		<object_files>
+		</object_files>
+		<header_directories>
+			<dir>D:\Home\ancel\GitHub\no-sweat\Meta-compiler</dir>
+			<dir>D:\Home\ancel\GitHub\pugixml\src</dir>
+			<dir>D:\Home\ancel\GitHub\boost</dir>
+		</header_directories>
+		<libraries_directories>
+			<dir>D:\Home\ancel\GitHub\boost\stage\lib</dir>
+		</libraries_directories>
+		<libraries_names>
+			<name>pugixml.lib</name>
+		</libraries_names>
+		<output_directory>D:\Home\ancel\GitHub\no-sweat\Meta-compiler\</output_directory>
+		<executable_name>D:\Home\ancel\GitHub\no-sweat\Meta-compiler\meta_comp.exe</executable_name>
+	</project>
+</xml>
