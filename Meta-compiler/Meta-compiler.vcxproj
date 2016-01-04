@@ -74,11 +74,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Home\ancel\GitHub\boost;D:\Home\ancel\GitHub\pugixml\src;D:\Home\ancel\GitHub\no-sweat\Meta-compiler\Debug;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\pugixml\src;$(SolutionDir)..\boost;$(SolutionDir)Meta-compiler\Debug;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Home\ancel\GitHub\boost\stage\lib;D:\Home\ancel\GitHub\pugixml\scripts\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\pugixml\scripts\vs2015\Win32_Debug;$(SolutionDir)..\boost\stage\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>pugixml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -100,13 +100,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Home\ancel\GitHub\boost;D:\Home\ancel\GitHub\pugixml\src;D:\Home\ancel\GitHub\no-sweat\Meta-compiler</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\pugixml\src;$(SolutionDir)..\boost;$(SolutionDir)Meta-compiler\Release</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\Home\ancel\GitHub\boost\stage\lib;D:\Home\ancel\GitHub\pugixml\scripts\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\pugixml\scripts\vs2015\Win32_Release;$(SolutionDir)..\boost\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pugixml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
