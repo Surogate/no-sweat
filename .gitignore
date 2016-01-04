@@ -48,3 +48,4 @@
 /Meta-compiler/Debug/*.pdb
 /Meta-compiler/Debug/Meta-compiler.tlog/*.tlog
 /Meta-compiler/Debug/Meta-compiler.tlog/*.lastbuildstate
+*.sdf
